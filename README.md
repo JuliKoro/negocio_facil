@@ -1,7 +1,7 @@
 # negocio_facil
 Proyecto inicial para administrar ciertas funciones de un negocio.
 
-Especificación de reguisitos:
+Especificación de requisitos:
 
 Requisitos Funcionales:
  - Tener un menú inicial por donde se pueda elegir qué hacer.
