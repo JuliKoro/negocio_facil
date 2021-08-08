@@ -3,7 +3,7 @@
 Negocio Fácil [Python]
 (Prototipo inicial)
 ---------------------------
-Descripcion:
+Descripción:
 Programa creado como proyecto inicial para administrar un negocio comercial 
 en diversas funciones.
 Para más información leer el archivo "README.md"
@@ -90,7 +90,7 @@ def cargar_proveedor():
         csvfile = open('lista_proveedor1.csv')
         data = list(csv.DictReader(csvfile, delimiter=";"))
         csvfile.close()
-        print(f"¡Se han cargado {len(data)-1} productos con éxito!")
+        print(f"¡Se han cargado {len(data)} productos con éxito!")
         return data
     except:
         print('Error de archivo.\nNo se encontrò la lista del proveedor.')
@@ -98,11 +98,26 @@ def cargar_proveedor():
 
 
 def precio_final(lista_proveedor):
+    ''' Calcular precio final de venta
+
+    Calcula el precio con el IVA (21%) y el precio sumando el porcentaje de ganancia deseado
+    por el usuario de cada producto de la lista del proveedor.
+    Genera un nuevo archivo con estas dos nuevas columnas:
+    'iva' -> precio + 21%
+    precio_venta -> 'iva' + ganancia%
+    
+    Retorna una lista de diccionarios con las nuevas 'keys' y 'values' 
+
+    @param lista_proveedor Diccionario con la lista de productos extraido del archivo del proveedor.
+    '''
     print('A la información de cada producto se le agregará el 21"%" del IVA y el ',
     '"%" de ganancia para el precio final.')
+    # Genero una lista extrayendo solo los 'precios' de la lista de diccionarios de productos del proveedor
     precio_prov = [lista_proveedor[x]['precio'] for x in range(len(lista_proveedor))]
+    # Convierto la lista de precios a vector para operar más rapidamente.
     precio_prov_vec = np.array(precio_prov)
-    precio_iva = np.percentile(precio_prov_vec, 21)
+    # Calculo y sumo el porcentaje del IVA (21%) a cada uno de los precios
+    #precio_iva = np.percentile(precio_prov_vec, 21)
     while True:
         ganancia = int(input('Indique el "%" de ganancia que desea:\n'))
         try:
@@ -110,8 +125,11 @@ def precio_final(lista_proveedor):
         except:
             print('Ingreso inválido. Ingrese un número entero, por favor.')
             continue
-    
 
+
+def nuevo_producto():
+    print('A continuación agregue los datos necesarios del nuevo producto.\n')
+    pass
 
 if __name__ == '__main__':
     print('¡Bienvenido a Tu Negocio Fácil!\nUn programa para ayudarte a administrar',
@@ -130,13 +148,13 @@ if __name__ == '__main__':
     print(f"Bienvenido/a {perfil[0]['nombre']}!\n")
     print('A continuación se cargará el archivo con la lista de precios del proveedor.')
     lista_proveedor = cargar_proveedor()
-    if lista_proveedor != False:
+    if lista_proveedor != False: # Si se cargó bien el archivo del proveedor
         while True:
             print('¿Qué desea hacer?\n(Eliga una opción del menú)\n')
-            menu = int(input('1. Generar archivo con precio de venta final.\n2. Agregar nuevo producto a la lista local.\n3. Actualizar precios.\n4. Buscar producto.\n5. Controlar stock.\n'))
+            menu = int(input('1. Generar archivo con precio de venta final.\n2. Agregar nuevo producto a la lista local.\n3. Actualizar precios.\n4. Buscar producto.\n5. Controlar stock.\n0. Salir.\n'))
             if menu == 1:
                 precio_final(lista_proveedor)
-                pass
+                break
             elif menu == 2:
                 pass
             elif menu == 3:
@@ -145,8 +163,11 @@ if __name__ == '__main__':
                 pass
             elif menu == 5:
                 pass
+            elif menu == 0: 
+                print('¡Gracias por usar Tu Negocio Fácil!\n¡Hasta la próxima!')
+                break
             else:
                 print('Ingrese una opción correcta, por favor.')
                 continue
-    else: print('Sin archivo de proveedor no se puede continuar.\n¡Hastla Luego!')
+    else: print('Sin archivo de proveedor no se puede continuar.\n¡Hasta Luego!')
       
