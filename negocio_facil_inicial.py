@@ -91,7 +91,6 @@ def cargar_proveedor():
         data = list(csv.DictReader(csvfile, delimiter=";"))
         csvfile.close()
         print(f"¡Se han cargado {len(data)-1} productos con éxito!")
-        print(f"Producto 1: {data[0]}")
         return data
     except:
         print('Error de archivo.\nNo se encontrò la lista del proveedor.')
@@ -101,10 +100,9 @@ def cargar_proveedor():
 def precio_final(lista_proveedor):
     print('A la información de cada producto se le agregará el 21"%" del IVA y el ',
     '"%" de ganancia para el precio final.')
-    #precio_prov = [lista_proveedor[x]['precio'] for x in lista_proveedor]
-    #precio_pro_vec = np.array(precio_prov)
-    print(f"Precio Producto 1: {lista_proveedor[0]['producto']}")
-    precio_iva = 0
+    precio_prov = [lista_proveedor[x]['precio'] for x in range(len(lista_proveedor))]
+    precio_prov_vec = np.array(precio_prov)
+    precio_iva = np.percentile(precio_prov_vec, 21)
     while True:
         ganancia = int(input('Indique el "%" de ganancia que desea:\n'))
         try:
