@@ -14,6 +14,7 @@ __email__ = "julian.koroluk@outlook.com"
 __version__ = "0.1"
 
 import csv
+
 # Defino el diccionario de manera global ya que se usa en distintas funciones.
 perfil = {
     'nombre': 'Nombre',
