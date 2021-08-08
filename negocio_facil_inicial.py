@@ -14,6 +14,8 @@ __email__ = "julian.koroluk@outlook.com"
 __version__ = "0.1"
 
 import csv
+import numpy as np
+from numpy.lib.function_base import percentile
 
 # Defino el diccionario de manera global ya que se usa en distintas funciones.
 perfil = {
@@ -88,21 +90,33 @@ def cargar_proveedor():
         csvfile = open('lista_proveedor1.csv')
         data = list(csv.DictReader(csvfile))
         csvfile.close()
+        print(f"¡Se han cargado {len(data)-1} productos con éxito!")
         return data
     except:
         print('Error de archivo.\nNo se encontrò la lista del proveedor.')
         return False
 
 
-def precio_final():
-    pass
+def precio_final(lista_proveedor):
+    print('A la información de cada producto se le agregará el 21"%" del IVA y el ',
+    '"%" de ganancia para el precio final.')
+    lista_final = lista_proveedor
+    precio_prov = np.array(lista_proveedor['precio'])
+    precio_iva = 0
+    while True:
+        ganancia = int('Indique el "%" de ganancia que desea:\n')
+        try:
+            break
+        except:
+            print('Ingreso inválido. Ingrese un número entero, por favor.')
+            continue
+    
 
 
 if __name__ == '__main__':
     print('¡Bienvenido a Tu Negocio Fácil!\nUn programa para ayudarte a administrar',
     'tu negocio en diversas tareas.\n')
-    inicio = 1 # Varialbe por default
-    while inicio in range(1,3):
+    while True:
         inicio = int(input('¿Desea crear un nuevo perfil o cargar desde el archivo?\n(Ingrese la opción que desee)\n1. Crear nuevo perfil.\n2. Cargar perfil.\n'))
         if inicio == 1: 
             crear_perfil()
@@ -113,15 +127,15 @@ if __name__ == '__main__':
         else: 
             print('Ingrese una opción correcta, por favor.')
             continue
-    print(f"Bienvenido/a {perfil[0]['nombre']}!")
-    menu = 1
+    print(f"Bienvenido/a {perfil[0]['nombre']}!\n")
     print('A continuación se cargará el archivo con la lista de precios del proveedor.')
     lista_proveedor = cargar_proveedor()
     if lista_proveedor != False:
-        while menu in range(1, 3):
+        while True:
             print('¿Qué desea hacer?\n(Eliga una opción del menú)\n')
-            menu = int(input('1. Generar archivo con precio de venta final.\n2. Agregar nuevo producto a la lista local.\n3. Actualizar precios.\n4. Buscar producto.\n5. Controlar stock.'))
+            menu = int(input('1. Generar archivo con precio de venta final.\n2. Agregar nuevo producto a la lista local.\n3. Actualizar precios.\n4. Buscar producto.\n5. Controlar stock.\n'))
             if menu == 1:
+                precio_final(lista_proveedor)
                 pass
             elif menu == 2:
                 pass
