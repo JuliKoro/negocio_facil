@@ -73,7 +73,28 @@ def cargar_perfil():
 
 
 def cargar_proveedor():
-    
+    '''Cargar lista de precios del proveedor
+
+    Carga los datos de los productos desde un archivo csv proporcionado por un proveedor.
+    En caso de no encontrar el archivo imprime un mensaje de error.
+    Y retorna un diccionario con estos datos:
+    'producto' -> Nro. del producto
+    'cod_barra' -> Código de barras del producto
+    'descripcion' -> Descripción del producto
+    'precio' -> Precio del producto del proveedor (con IVA)
+    'fecha_mod' -> Fecha de última modificación del precio
+    '''
+    try:
+        csvfile = open('lista_proveedor1.csv')
+        data = list(csv.DictReader(csvfile))
+        csvfile.close()
+        return data
+    except:
+        print('Error de archivo.\nNo se encontrò la lista del proveedor.')
+        return False
+
+
+def precio_final():
     pass
 
 
@@ -94,7 +115,24 @@ if __name__ == '__main__':
             continue
     print(f"Bienvenido/a {perfil[0]['nombre']}!")
     menu = 1
-    while menu in range(1, 3):
-        print('¿Qué desea hacer?\n(Eliga una opción del menú)\n')
-        menu = int(input('1. Cargar listas de proveedores.\n2. Generar archivo con precio de venta final.\n3. Agregar nuevo producto a la lista local.\n4. Actualizar precios.\n5. Buscar producto.\n6. Controlar stock.'))
-        
+    print('A continuación se cargará el archivo con la lista de precios del proveedor.')
+    lista_proveedor = cargar_proveedor()
+    if lista_proveedor != False:
+        while menu in range(1, 3):
+            print('¿Qué desea hacer?\n(Eliga una opción del menú)\n')
+            menu = int(input('1. Generar archivo con precio de venta final.\n2. Agregar nuevo producto a la lista local.\n3. Actualizar precios.\n4. Buscar producto.\n5. Controlar stock.'))
+            if menu == 1:
+                pass
+            elif menu == 2:
+                pass
+            elif menu == 3:
+                pass
+            elif menu == 4:
+                pass
+            elif menu == 5:
+                pass
+            else:
+                print('Ingrese una opción correcta, por favor.')
+                continue
+    else: print('Sin archivo de proveedor no se puede continuar.\n¡Hastla Luego!')
+      
