@@ -88,9 +88,13 @@ def cargar_proveedor():
     '''
     try:
         csvfile = open('lista_proveedor1.csv')
-        data = list(csv.DictReader(csvfile, delimiter=";"))
+        data = list(csv.DictReader(csvfile, delimiter=";")) # Archivo separado por ";"
         csvfile.close()
         print(f"¡Se han cargado {len(data)} productos con éxito!")
+        for i in range(len(data)): # Convertir 'precio' en float
+            data[i]['precio'].replace('$','')
+            data[i]['precio'].replace(',','.')
+            data[i]['precio'] = float(data[i]['precio'])
         return data
     except:
         print('Error de archivo.\nNo se encontrò la lista del proveedor.')
@@ -106,7 +110,7 @@ def precio_final(lista_proveedor):
     'iva' -> precio + 21%
     precio_venta -> 'iva' + ganancia%
     
-    Retorna una lista de diccionarios con las nuevas 'keys' y 'values' 
+    Retorna una lista de diccionarios con las nuevas 'keys' y 'values' ('lista_final')
 
     @param lista_proveedor Diccionario con la lista de productos extraido del archivo del proveedor.
     '''
@@ -117,15 +121,33 @@ def precio_final(lista_proveedor):
     # Convierto la lista de precios a vector para operar más rapidamente.
     precio_prov_vec = np.array(precio_prov)
     # Calculo y sumo el porcentaje del IVA (21%) a cada uno de los precios
-    #precio_iva = np.percentile(precio_prov_vec, 21)
+    precio_iva = np.percentile(precio_prov_vec, 21)
     while True:
         ganancia = int(input('Indique el "%" de ganancia que desea:\n'))
         try:
+            precio_final = np.percentile(precio_iva, ganancia)
             break
         except:
-            print('Ingreso inválido. Ingrese un número entero, por favor.')
+            print('Ingreso inválido. Ingrese un número, por favor.')
             continue
+    print(f'¡Recarga de precios con éxito!\nSe recargo un {ganancia+21}% al precio del proveedor.')
+    lista_final = lista_proveedor # Se crea una nueva lista copiada de la del proveedor
+    for i in range(len(lista_proveedor)):
+        '''Se agragan dos nuevas columnas:
+        'precio_iva' -> Precio de cada producto con el aumento de IVA (21%)
+        'precio_final' -> 'precio_iva' con el aumento de 'ganancia'
+        '''
+        lista_final[i]['precio_iva'] = precio_iva[i]
+        lista_final[i]['precio_final'] = precio_final[i]
+    
+    # Guarda la lista nueva local en un archivo .csv ('lista_local.csv')
+    csvfile = open('lista_local.csv', 'w', newline='')
+    header = list(lista_final[0].keys())
+    writer = csv.DictWriter(csvfile, fieldnames=header)
+    writer.writeheader()
+    csv.close()
 
+    return lista_final
 
 def nuevo_producto():
     print('A continuación agregue los datos necesarios del nuevo producto.\n')
@@ -153,7 +175,7 @@ if __name__ == '__main__':
             print('¿Qué desea hacer?\n(Eliga una opción del menú)\n')
             menu = int(input('1. Generar archivo con precio de venta final.\n2. Agregar nuevo producto a la lista local.\n3. Actualizar precios.\n4. Buscar producto.\n5. Controlar stock.\n0. Salir.\n'))
             if menu == 1:
-                precio_final(lista_proveedor)
+                lista_local = precio_final(lista_proveedor)
                 break
             elif menu == 2:
                 pass
