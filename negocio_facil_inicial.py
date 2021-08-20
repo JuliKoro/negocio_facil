@@ -11,11 +11,12 @@ Para más información leer el archivo "README.md"
 
 __author__ = "Julián Andrés Koroluk"
 __email__ = "julian.koroluk@outlook.com"
-__version__ = "0.1"
+__version__ = "0.2"
 
 import csv
 import numpy as np
 from numpy.lib.function_base import percentile
+
 
 # Defino el diccionario de manera global ya que se usa en distintas funciones.
 perfil = {
@@ -54,6 +55,7 @@ def crear_perfil():
     csvfile.close()
     print('¡Perfil guardado!')
     return perfil
+
 
 def cargar_perfil():
     '''Cargar perfil de usuario
@@ -101,6 +103,33 @@ def cargar_proveedor():
         return False
 
 
+def cargar_local():
+    '''Cargar lista de productos local
+    
+    Carga los datos de los productos a la venta del local desde un archivo csv creado anteriormente.
+    En caso de no encontrar el archivo imprime un mensaje y continua creando un archivo.
+    Y retorna un diccionario con estos datos:
+    'producto' -> Nro. del producto
+    'cod_barra' -> Código de barras del producto
+    'descripcion' -> Descripción del producto
+    'precio' -> Precio del producto del proveedor (sin IVA)
+    'fecha_mod' -> Fecha de última modificación del precio
+    'precio_iva' -> Precio de cada producto con el aumento de IVA (21%)
+    'precio_final' -> 'precio_iva' con el aumento de 'ganancia'
+    'stock' -> 'True' si hace falta pedir, 'False' no hace nada
+    '''
+    try:
+        csvfile = open('lista_local.csv')
+        data = list(csv.DictReader(csvfile))
+        csvfile.close()
+        print(f"¡Se han cargado {len(data)} productos locales con éxito!")
+        return data
+    except:
+        print('No se ha encontrado ningún archivo de productos locales.\n',
+        'A continuación se creará uno a partir de una lista del proveedor.')
+        return False
+
+
 def precio_final(lista_proveedor):
     ''' Calcular precio final de venta
 
@@ -133,12 +162,14 @@ def precio_final(lista_proveedor):
     print(f'¡Recarga de precios con éxito!\nSe recargo un {ganancia+21}% al precio del proveedor.')
     lista_final = lista_proveedor # Se crea una nueva lista copiada de la del proveedor
     for i in range(len(lista_proveedor)):
-        '''Se agragan dos nuevas columnas:
+        '''Se agragan tres nuevas columnas:
         'precio_iva' -> Precio de cada producto con el aumento de IVA (21%)
         'precio_final' -> 'precio_iva' con el aumento de 'ganancia'
+        'stock' -> 'True' si hace falta pedir, 'False' no hace nada
         '''
         lista_final[i]['precio_iva'] = precio_iva[i]
         lista_final[i]['precio_final'] = precio_final[i]
+        lista_final[i]['stock'] = False
     
     # Guarda la lista nueva local en un archivo .csv ('lista_local.csv')
     csvfile = open('lista_local.csv', 'w', newline='')
@@ -149,9 +180,15 @@ def precio_final(lista_proveedor):
 
     return lista_final
 
+
+def buscar_producto(lista_local):
+    pass
+
+
 def nuevo_producto():
     print('A continuación agregue los datos necesarios del nuevo producto.\n')
     pass
+
 
 if __name__ == '__main__':
     print('¡Bienvenido a Tu Negocio Fácil!\nUn programa para ayudarte a administrar',
@@ -167,23 +204,26 @@ if __name__ == '__main__':
         else: 
             print('Ingrese una opción correcta, por favor.')
             continue
+    
     print(f"Bienvenido/a {perfil[0]['nombre']}!\n")
-    print('A continuación se cargará el archivo con la lista de precios del proveedor.')
-    lista_proveedor = cargar_proveedor()
-    if lista_proveedor != False: # Si se cargó bien el archivo del proveedor
+    print('A continuación se cargará el archivo con la lista de precios local.')
+    lista_local = cargar_local()
+    if lista_local == False: # Si no se cargó la lista de precios local
+        lista_proveedor = cargar_proveedor()
+        if lista_proveedor != False: # Si se cargó bien la lista del proveedor
+            print('A continuación se creará el archivo con la lista de precios local.')
+            lista_local = precio_final(lista_proveedor)
         while True:
             print('¿Qué desea hacer?\n(Eliga una opción del menú)\n')
-            menu = int(input('1. Generar archivo con precio de venta final.\n2. Agregar nuevo producto a la lista local.\n3. Actualizar precios.\n4. Buscar producto.\n5. Controlar stock.\n0. Salir.\n'))
+            menu = int(input('1. Buscar producto.\n2. Agregar nuevo producto a la lista local.\n3. Actualizar precios.\n4. Controlar stock.\n0. Salir.\n'))
             if menu == 1:
-                lista_local = precio_final(lista_proveedor)
+                
                 break
             elif menu == 2:
                 pass
             elif menu == 3:
                 pass
             elif menu == 4:
-                pass
-            elif menu == 5:
                 pass
             elif menu == 0: 
                 print('¡Gracias por usar Tu Negocio Fácil!\n¡Hasta la próxima!')
