@@ -186,37 +186,63 @@ def precio_final(lista_proveedor):
     return lista_final
 
 
-def buscar_producto(lista_local):
+def editar_producto(lista_local, search):
     while True:
-        tipo = input('A continuación elija cómo quiere buscar el producto:\n1. Nro. Producto\n2. Código de barras\nDescripción\n')
-        if tipo == 1:
+        param = int(input('Elija qué parametro del producto quiere editar.\n1.Editar nro. producto\n2.Editar codigo de barras\n3. Editar descripción.\n4. Editar precio final.\n'))
+        if param == 1:
+            pass
+        elif param == 2:
+            pass
+        elif param == 3:
+            pass
+        elif param == 4:
+            pass
+        else:
+            print('Ingrese una de las opciones, por favor.')
+            continue
+
+
+def buscar_producto(lista_local):
+    '''Buscar un producto de la lista local
+
+    Busca el diccionario de un producto de la lista 'lista_local'.
+    Se puede buscar según el nro. de producto, código de barras o descricpión.
+    Cuando el resultado es único se da la opción de editar el producto y se llama a
+    la función 'editar_producto(lista_local, search)'
+
+    @param lista_local Lista de diccionarios con los productos locales
+    '''
+    while True:
+        tipo = int(input('A continuación elija cómo quiere buscar el producto:\n1. Nro. Producto\n2. Código de barras\n3. Descripción\n'))
+        if tipo == 1: # Por nro. de producto
             nro_prod = input('Ingrese Nro. del producto: ')
-            search = next((prod for prod in lista_local if prod['producto'] == nro_prod), None)
-        elif tipo == 2:
+            search = next((i for i, prod in enumerate(lista_local) if prod['producto'] == nro_prod), None)
+        elif tipo == 2: # Por código de barras
             cod_barra = input('Ingrese código de barras: ')
-            search = next((prod for prod in lista_local if prod['cod_barra'] == cod_barra), None)
-        elif tipo == 3:
+            search = next((i for i, prod in enumerate(lista_local) if prod['cod_barra'] == cod_barra), None)
+        elif tipo == 3: # Por la descripción
             desc = input('Ingrese la descripción: ')
-            search = next((prod for prod in lista_local if desc in prod['descripcion']), None)
+            search = next((i for i, prod in enumerate(lista_local) if desc in prod['descripcion']), None)
         else: 
             print('Ingrese una opción valida, por favor.')
             continue
-        if search != None:
-            print('¡Producto encontrado!\n', search)
-            sig = input('¿Quiere realizar alguna acción con este producto?\n1. Marcar stock como faltante.\n2. Editar producto.\n3. Eliminar producto.\n0. Salir.\n')
-            if sig == 1:
+        if search != None: # Cuando se encuentra el/los producto/s
+            print('¡Producto encontrado!\n', lista_local[search])
+            sig = int(input('¿Quiere realizar alguna acción con este producto?\n1. Marcar stock como faltante.\n2. Editar producto.\n3. Eliminar producto.\n0. Salir.\n'))
+            if sig == 1: # Marcar stock faltante
+                
                 pass
-            elif sig == 2:
+            elif sig == 2: # Editar producto
+                editar_producto(lista_local, search)
+            elif sig == 3: # Eliminar producto
                 pass
-            elif sig == 3:
-                pass
-            elif sig == 0: break
+            elif sig == 0: break # Salir
             else:
                 print('Ingrese una opción correcta, por favor')
                 continue
-        else: 
+        else: # Cuando no se encuentra el producto
             print('Producto no encontrado.')
-            continuar = input('¿Quiere seguir buscando?\n1. Si\n2. No\n')
+            continuar = int(input('¿Quiere seguir buscando?\n1. Si\n2. No\n'))
             if continuar == 1: continue
             elif continuar == 2: break
             else: print('Ingrese una opción correcta, por favor')
@@ -268,10 +294,10 @@ if __name__ == '__main__':
         menu = int(input('1. Buscar producto.\n2. Agregar nuevo producto a la lista local.\n3. Actualizar precios.\n4. Controlar stock.\n0. Salir.\n'))
         if menu == 1:
             buscar_producto(lista_local)
-            break
+            continue
         elif menu == 2:
             nuevo_producto(lista_local)
-            break
+            continue
         elif menu == 3:
             pass
         elif menu == 4:
