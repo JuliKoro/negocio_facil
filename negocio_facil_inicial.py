@@ -14,6 +14,7 @@ __email__ = "julian.koroluk@outlook.com"
 __version__ = "0.2"
 
 import csv
+from os import write
 import numpy as np
 from numpy.lib.function_base import percentile
 
@@ -146,23 +147,25 @@ def precio_final(lista_proveedor):
     '''
     print('A la información de cada producto se le agregará el 21"%" del IVA y el ',
     '"%" de ganancia para el precio final.')
-    # Genero una lista extrayendo solo los 'precios' de la lista de diccionarios de productos del proveedor
-    precio_prov = [lista_proveedor[x]['precio'] for x in range(len(lista_proveedor))]
+    iva = 0.21 # Variable para calcular el procentaje del iva
+    # Genero una lista sumando el 21% al precio de cada producto
+    precio_iva = [lista_proveedor[x]['precio']+lista_proveedor[x]['precio']*iva for x in range(len(lista_proveedor))]
     # Convierto la lista de precios a vector para operar más rapidamente.
-    precio_prov_vec = np.array(precio_prov)
+    #precio_prov_vec = np.array(precio_prov)
     # Calculo y sumo el porcentaje del IVA (21%) a cada uno de los precios
-    precio_iva = np.percentile(precio_prov_vec, 21)
+    #precio_iva = np.percentile(precio_prov_vec, 21)
     while True:
         ganancia = int(input('Indique el "%" de ganancia que desea:\n'))
         try:
-            precio_final = np.percentile(precio_iva, ganancia)
+            # Genero una lista sumando el % de 'ganancia' a 'precio_iva'
+            precio_final = [precio_iva[i]+precio_iva[i]*(ganancia/100) for i in range(len(precio_iva))]
             break
         except:
             print('Ingreso inválido. Ingrese un número, por favor.')
             continue
     print(f'¡Recarga de precios con éxito!\nSe recargo un {ganancia+21}% al precio del proveedor.')
     lista_final = lista_proveedor # Se crea una nueva lista copiada de la del proveedor
-    for i in range(len(lista_proveedor)):
+    for i in range(len(lista_final)):
         '''Se agragan tres nuevas columnas:
         'precio_iva' -> Precio de cada producto con el aumento de IVA (21%)
         'precio_final' -> 'precio_iva' con el aumento de 'ganancia'
@@ -177,7 +180,8 @@ def precio_final(lista_proveedor):
     header = list(lista_final[0].keys())
     writer = csv.DictWriter(csvfile, fieldnames=header)
     writer.writeheader()
-    csv.close()
+    writer.writerows(map(lambda x: lista_final[x], range(len(lista_final))))
+    csvfile.close()
 
     return lista_final
 
@@ -209,28 +213,32 @@ if __name__ == '__main__':
     print(f"Bienvenido/a {perfil[0]['nombre']}!\n")
     print('A continuación se cargará el archivo con la lista de precios local.')
     lista_local = cargar_local()
-    if lista_local == False: # Si no se cargó la lista de precios local
+    while lista_local == False: # Si no se cargó la lista de precios local
         lista_proveedor = cargar_proveedor()
         if lista_proveedor != False: # Si se cargó bien la lista del proveedor
             print('A continuación se creará el archivo con la lista de precios local.')
             lista_local = precio_final(lista_proveedor)
-        while True:
-            print('¿Qué desea hacer?\n(Eliga una opción del menú)\n')
-            menu = int(input('1. Buscar producto.\n2. Agregar nuevo producto a la lista local.\n3. Actualizar precios.\n4. Controlar stock.\n0. Salir.\n'))
-            if menu == 1:
-                
-                break
-            elif menu == 2:
-                pass
-            elif menu == 3:
-                pass
-            elif menu == 4:
-                pass
-            elif menu == 0: 
-                print('¡Gracias por usar Tu Negocio Fácil!\n¡Hasta la próxima!')
-                break
-            else:
-                print('Ingrese una opción correcta, por favor.')
-                continue
-    else: print('Sin archivo de proveedor no se puede continuar.\n¡Hasta Luego!')
+        else: 
+            print('Sin archivo de proveedor no se puede continuar.\n¡Hasta Luego!')
+            break
+    
+    while lista_local != False: # Si se cargó bien una lista local
+        print('¿Qué desea hacer?\n(Eliga una opción del menú)\n')
+        menu = int(input('1. Buscar producto.\n2. Agregar nuevo producto a la lista local.\n3. Actualizar precios.\n4. Controlar stock.\n0. Salir.\n'))
+        if menu == 1:
+
+            break
+        elif menu == 2:
+            pass
+        elif menu == 3:
+            pass
+        elif menu == 4:
+            pass
+        elif menu == 0: 
+            print('¡Gracias por usar Tu Negocio Fácil!\n¡Hasta la próxima!')
+            break
+        else:
+            print('Ingrese una opción correcta, por favor.')
+            continue
+
       
