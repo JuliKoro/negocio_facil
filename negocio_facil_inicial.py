@@ -94,12 +94,13 @@ def cargar_proveedor():
         csvfile.close()
         print(f"¡Se han cargado {len(data)} productos con éxito!")
         for i in range(len(data)): # Convertir 'precio' en float
-            data[i]['precio'].replace('$','')
-            data[i]['precio'].replace(',','.')
+            data[i]['precio'] = data[i]['precio'].replace('$','')
+            data[i]['precio'] = data[i]['precio'].replace('.','')
+            data[i]['precio'] = data[i]['precio'].replace(',','.')
             data[i]['precio'] = float(data[i]['precio'])
         return data
     except:
-        print('Error de archivo.\nNo se encontrò la lista del proveedor.')
+        print('Error de archivo.\nNo se encontró la lista del proveedor.')
         return False
 
 
