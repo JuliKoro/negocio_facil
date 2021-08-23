@@ -15,8 +15,8 @@ __version__ = "0.2"
 
 import csv
 from os import write
-import numpy as np
-from numpy.lib.function_base import percentile
+#import numpy as np
+#from numpy.lib.function_base import percentile
 
 
 # Defino el diccionario de manera global ya que se usa en distintas funciones.
@@ -214,6 +214,7 @@ if __name__ == '__main__':
     print('A continuación se cargará el archivo con la lista de precios local.')
     lista_local = cargar_local()
     while lista_local == False: # Si no se cargó la lista de precios local
+        print('A continuación se cargará el archivo con la lista de precios del proveedor.')
         lista_proveedor = cargar_proveedor()
         if lista_proveedor != False: # Si se cargó bien la lista del proveedor
             print('A continuación se creará el archivo con la lista de precios local.')
