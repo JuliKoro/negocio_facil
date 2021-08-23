@@ -187,11 +187,51 @@ def precio_final(lista_proveedor):
 
 
 def buscar_producto(lista_local):
+    while True:
+        tipo = input('A continuación elija cómo quiere buscar el producto:\n1. Nro. Producto\n2. Código de barras\nDescripción\n')
+        if tipo == 1:
+            nro_prod = input('Ingrese Nro. del producto: ')
+            search = next((prod for prod in lista_local if prod['producto'] == nro_prod), None)
+        elif tipo == 2:
+            cod_barra = input('Ingrese código de barras: ')
+            search = next((prod for prod in lista_local if prod['cod_barra'] == cod_barra), None)
+        elif tipo == 3:
+            desc = input('Ingrese la descripción: ')
+            search = next((prod for prod in lista_local if desc in prod['descripcion']), None)
+        else: 
+            print('Ingrese una opción valida, por favor.')
+            continue
+        if search != None:
+            print('¡Producto encontrado!\n', search)
+            sig = input('¿Quiere realizar alguna acción con este producto?\n1. Marcar stock como faltante.\n2. Editar producto.\n3. Eliminar producto.\n0. Salir.\n')
+            if sig == 1:
+                pass
+            elif sig == 2:
+                pass
+            elif sig == 3:
+                pass
+            elif sig == 0: break
+            else:
+                print('Ingrese una opción correcta, por favor')
+                continue
+        else: 
+            print('Producto no encontrado.')
+            continuar = input('¿Quiere seguir buscando?\n1. Si\n2. No\n')
+            if continuar == 1: continue
+            elif continuar == 2: break
+            else: print('Ingrese una opción correcta, por favor')
+
+
+def nuevo_producto(lista_local):
+    print('A continuación agregue los datos necesarios del nuevo producto.\n')
     pass
 
 
-def nuevo_producto():
-    print('A continuación agregue los datos necesarios del nuevo producto.\n')
+def act_precios(lista_local):
+    pass
+
+
+def controlar_stock(lista_local):
     pass
 
 
@@ -227,10 +267,11 @@ if __name__ == '__main__':
         print('¿Qué desea hacer?\n(Eliga una opción del menú)\n')
         menu = int(input('1. Buscar producto.\n2. Agregar nuevo producto a la lista local.\n3. Actualizar precios.\n4. Controlar stock.\n0. Salir.\n'))
         if menu == 1:
-
+            buscar_producto(lista_local)
             break
         elif menu == 2:
-            pass
+            nuevo_producto(lista_local)
+            break
         elif menu == 3:
             pass
         elif menu == 4:
