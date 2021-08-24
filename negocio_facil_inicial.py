@@ -11,7 +11,7 @@ Para más información leer el archivo "README.md"
 
 __author__ = "Julián Andrés Koroluk"
 __email__ = "julian.koroluk@outlook.com"
-__version__ = "0.2"
+__version__ = "0.3"
 
 import csv
 from os import write
