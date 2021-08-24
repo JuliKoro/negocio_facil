@@ -187,19 +187,54 @@ def precio_final(lista_proveedor):
 
 
 def editar_producto(lista_local, search):
+    '''Editar valores de un producto
+    
+    Modifica los valores de 'producto', 'cod_barra', 'descripcion' y 'precio_final' de
+    la lista de diccionarios de 'lista_local' que contiene los productos locales.
+    Retorna la lista modificada.
+
+    @param lista_local Lista de diccionarios con los productos locales
+    @param search Índice del producto buscado en lista_local, valor devuelto por 'buscar_producto()'
+    '''
     while True:
-        param = int(input('Elija qué parametro del producto quiere editar.\n1.Editar nro. producto\n2.Editar codigo de barras\n3. Editar descripción.\n4. Editar precio final.\n'))
+        param = int(input('Elija qué parametro del producto quiere editar.\n1.Editar nro. producto\n2.Editar codigo de barras\n3. Editar descripción.\n4. Editar precio final.\n0. Salir\n'))
         if param == 1:
-            pass
+            nro_prod = input('Ingrese nuevo Nro. del producto: ')
+            lista_local[search]['producto'] = nro_prod
+            print('¡Nro. de producto actualizado!')
         elif param == 2:
-            pass
+            cod_barra = input('Ingrese nuevo código de barras del producto: ')
+            lista_local[search]['cod_barra'] = cod_barra
+            print('¡Código de barras del producto actualizado!')
         elif param == 3:
-            pass
+            desc = input('Ingrese nueva descripción del producto: ')
+            lista_local[search]['descripcion'] = desc
+            print('¡Descripción del producto actualizado!')
         elif param == 4:
-            pass
+            precio_final = input('Ingrese nuevo precio final del producto: $')
+            lista_local[search]['precio_final'] = precio_final
+            print('¡Precio final del producto actualizado!')
+        elif param == 0:
+            break
         else:
             print('Ingrese una de las opciones, por favor.')
             continue
+    
+    return lista_local
+
+
+def eliminar_producto(lista_local, search):
+    '''Eliminar producto de la lista local
+    
+    Elimina el diccionario de la 'lista_local' según el índice pasado por 'buscar_producto()' 
+    Retorna la lista ya modificada
+
+    @param lista_local Lista de diccionarios con los productos locales
+    @param search Índice del producto buscado en lista_local, valor devuelto por 'buscar_producto()'
+    '''
+    del lista_local[search]
+    print('¡Producto eliminado con éxito!')
+    return lista_local
 
 
 def buscar_producto(lista_local):
@@ -230,12 +265,12 @@ def buscar_producto(lista_local):
             print('¡Producto encontrado!\n', lista_local[search])
             sig = int(input('¿Quiere realizar alguna acción con este producto?\n1. Marcar stock como faltante.\n2. Editar producto.\n3. Eliminar producto.\n0. Salir.\n'))
             if sig == 1: # Marcar stock faltante
-                
-                pass
+                lista_local[search]['stock'] = True
+                print('¡Stock marcado como faltante!')
             elif sig == 2: # Editar producto
                 editar_producto(lista_local, search)
             elif sig == 3: # Eliminar producto
-                pass
+                eliminar_producto(lista_local, search)
             elif sig == 0: break # Salir
             else:
                 print('Ingrese una opción correcta, por favor')
@@ -246,6 +281,8 @@ def buscar_producto(lista_local):
             if continuar == 1: continue
             elif continuar == 2: break
             else: print('Ingrese una opción correcta, por favor')
+    
+    return search
 
 
 def nuevo_producto(lista_local):
