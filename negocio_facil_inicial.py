@@ -11,10 +11,11 @@ Para más información leer el archivo "README.md"
 
 __author__ = "Julián Andrés Koroluk"
 __email__ = "julian.koroluk@outlook.com"
-__version__ = "0.4"
+__version__ = "1.0"
 
 import csv
 from os import write
+from datetime import datetime
 
 
 # Defino el diccionario de manera global ya que se usa en distintas funciones.
@@ -105,6 +106,21 @@ def cargar_proveedor():
         return False
 
 
+def guardar_local(lista_local):
+    '''Guardar lista local
+    
+    Guarda en un archivo .csv ("lista_local.csv") la lista de diccionarios con los productos
+    finales y modificados.
+    
+    @param lista_local Lista de diccionarios con los productos locales
+    '''
+    with open('lista_local.csv', 'w', newline='') as csvfile:
+        header = list(lista_local[0].keys())
+        writer = csv.DictWriter(csvfile, fieldnames=header)
+        writer.writeheader()
+        writer.writerows(map(lambda x: lista_local[x], range(len(lista_local))))
+
+
 def cargar_local():
     '''Cargar lista de productos local
     
@@ -175,13 +191,7 @@ def precio_final(lista_proveedor):
         lista_final[i]['stock'] = False
     
     # Guarda la lista nueva local en un archivo .csv ('lista_local.csv')
-    csvfile = open('lista_local.csv', 'w', newline='')
-    header = list(lista_final[0].keys())
-    writer = csv.DictWriter(csvfile, fieldnames=header)
-    writer.writeheader()
-    writer.writerows(map(lambda x: lista_final[x], range(len(lista_final))))
-    csvfile.close()
-
+    guardar_local(lista_final)
     return lista_final
 
 
@@ -212,13 +222,14 @@ def editar_producto(lista_local, search):
         elif param == 4:
             precio_final = input('Ingrese nuevo precio final del producto: $')
             lista_local[search]['precio_final'] = precio_final
+            hoy = datetime.now() # Fecha en que se edita el precio
+            lista_local[search]['fecha_mod'] = hoy.strftime("%d/%m/%Y")
             print('¡Precio final del producto actualizado!')
         elif param == 0:
             break
         else:
             print('Ingrese una de las opciones, por favor.')
             continue
-    
     return lista_local
 
 
@@ -282,7 +293,9 @@ def buscar_producto(lista_local):
             elif continuar == 2: break
             else: print('Ingrese una opción correcta, por favor')
     
-    return search
+    guardar_local(lista_local) # Guarda en un .csv la lista modificada
+    try: return search
+    except: return None
 
 
 def nuevo_producto(lista_local):
@@ -300,15 +313,18 @@ def nuevo_producto(lista_local):
     producto_nuevo['cod_barra'] = input('Ingrese un código de barras: ')
     producto_nuevo['descripcion'] = input('Ingrese el nombre del producto: ')
     producto_nuevo['precio'] = float(input('Ingrese el precio (sin IVA): '))
+    hoy = datetime.now() # Fecha en que se crea y agrega el nuevo producto
+    producto_nuevo['fecha_mod'] = hoy.strftime("%d/%m/%Y")
     producto_nuevo['precio_iva'] = producto_nuevo['precio'] + (producto_nuevo['precio'] * iva)
     print(f"Precio con IVA de {iva*100}%: ${producto_nuevo['precio_iva']}")
     producto_nuevo['precio_final']  = float(input('Ingrese el precio final: $'))
     stock = input('¿Tiene stock de este producto actualmente?\n1. Si\n2. No\n')
-    if stock == 1 or stock in ['si', 'Si', 'SI']: producto_nuevo['stock'] = False
-    elif stock == 2 or stock in ['no', 'No', 'NO']: producto_nuevo['stock'] = True
+    if stock == '1' or stock in ['si', 'Si', 'SI']: producto_nuevo['stock'] = False
+    elif stock == '2' or stock in ['no', 'No', 'NO']: producto_nuevo['stock'] = True
     else: print('Ingreso invalido.')
     lista_local.append(producto_nuevo)
     print('¡Producto nuevo agregado con éxito!')
+    guardar_local(lista_local) # Guarda en un .csv la lista modificada
 
     return lista_local
 
@@ -327,6 +343,7 @@ def act_precios(lista_local):
     if lista_proveedor != False: # Si se cargó bien la lista del proveedor
         print('A continuación se creará el archivo con la lista de precios local.')
         lista_local = precio_final(lista_proveedor)
+        guardar_local(lista_local) # Guarda en un .csv la lista modificada
         return lista_local
     else: print('Sin archivo de proveedor no se puede continuar.\n¡Hasta Luego!')
 
@@ -343,16 +360,15 @@ def controlar_stock(lista_local):
     'para luego pedirle al proveedor.\nSi quiere marcar un producto debe hacerlo ingresando a "1. Buscar producto" ',
     'desde el menú inicial.')
     # Filtro la lista local con los productos marcados como faltantes (True)
-    prod_falta = [lista_local[i] for i in range(len(lista_local)) if lista_local[i]['stock'] == True]
-    fo = open('stock_faltante.txt', 'w')
-    print('Productos faltantes:')
-    fo.write("Productos faltantes:\n")
-    for item in prod_falta:
-        print(item)
-        fo.writelines(item.values())
-    fo.flush()
-    fo.close()
-    print('¡Archivo de stock faltante creado con éxito!')
+    prod_falta = [item for item in lista_local if item['stock'] == 'True']
+    if len(prod_falta) > 0:
+        with open('stock_faltante.csv', 'w', newline='') as csvfile:
+            header = list(prod_falta[0].keys())
+            writer = csv.DictWriter(csvfile, fieldnames=header)
+            writer.writeheader()
+            writer.writerows(map(lambda x: prod_falta[x], range(len(prod_falta))))
+        print('¡Archivo de stock faltante creado con éxito!')
+    else: print('No hay productos faltantes.')
 
 
 if __name__ == '__main__':
