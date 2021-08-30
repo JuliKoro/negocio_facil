@@ -1,4 +1,4 @@
-# Mi Negocio Fácil! (Inicial/Prototipo)
+# ¡Mi Negocio Fácil! (Inicial/Prototipo)
 Proyecto inicial en Python para administrar algunas funciones básicas de un negocio comercial.
 
 ## Especificación de requisitos:
