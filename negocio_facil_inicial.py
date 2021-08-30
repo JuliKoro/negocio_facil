@@ -15,8 +15,6 @@ __version__ = "0.4"
 
 import csv
 from os import write
-#import numpy as np
-#from numpy.lib.function_base import percentile
 
 
 # Defino el diccionario de manera global ya que se usa en distintas funciones.
