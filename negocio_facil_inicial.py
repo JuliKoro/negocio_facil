@@ -303,7 +303,7 @@ def nuevo_producto(lista_local):
     producto_nuevo['precio_iva'] = producto_nuevo['precio'] + (producto_nuevo['precio'] * iva)
     print(f"Precio con IVA de {iva*100}%: ${producto_nuevo['precio_iva']}")
     producto_nuevo['precio_final']  = float(input('Ingrese el precio final: $'))
-    stock = input('¿Tiene stock de este producto actualmente?\n1. Si\n2. No')
+    stock = input('¿Tiene stock de este producto actualmente?\n1. Si\n2. No\n')
     if stock == 1 or stock in ['si', 'Si', 'SI']: producto_nuevo['stock'] = False
     elif stock == 2 or stock in ['no', 'No', 'NO']: producto_nuevo['stock'] = True
     else: print('Ingreso invalido.')
