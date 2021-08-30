@@ -11,7 +11,7 @@ Para más información leer el archivo "README.md"
 
 __author__ = "Julián Andrés Koroluk"
 __email__ = "julian.koroluk@outlook.com"
-__version__ = "0.3"
+__version__ = "0.4"
 
 import csv
 from os import write
@@ -28,6 +28,8 @@ perfil = {
     'provincia': 'Provincia',
     'fecha_inicio': 'hoy'
 }
+
+iva = 0.21 # Variable global del iva para calcular porcentajes
 
 
 def crear_perfil():
@@ -147,7 +149,6 @@ def precio_final(lista_proveedor):
     '''
     print('A la información de cada producto se le agregará el 21"%" del IVA y el ',
     '"%" de ganancia para el precio final.')
-    iva = 0.21 # Variable para calcular el procentaje del iva
     # Genero una lista sumando el 21% al precio de cada producto
     precio_iva = [lista_proveedor[x]['precio']+lista_proveedor[x]['precio']*iva for x in range(len(lista_proveedor))]
     # Convierto la lista de precios a vector para operar más rapidamente.
@@ -248,7 +249,7 @@ def buscar_producto(lista_local):
     @param lista_local Lista de diccionarios con los productos locales
     '''
     while True:
-        tipo = int(input('A continuación elija cómo quiere buscar el producto:\n1. Nro. Producto\n2. Código de barras\n3. Descripción\n'))
+        tipo = int(input('A continuación elija cómo quiere buscar el producto:\n1. Nro. Producto\n2. Código de barras\n3. Descripción\n0. Salir\n'))
         if tipo == 1: # Por nro. de producto
             nro_prod = input('Ingrese Nro. del producto: ')
             search = next((i for i, prod in enumerate(lista_local) if prod['producto'] == nro_prod), None)
@@ -258,6 +259,7 @@ def buscar_producto(lista_local):
         elif tipo == 3: # Por la descripción
             desc = input('Ingrese la descripción: ')
             search = next((i for i, prod in enumerate(lista_local) if desc in prod['descripcion']), None)
+        elif tipo == 0: break
         else: 
             print('Ingrese una opción valida, por favor.')
             continue
@@ -286,16 +288,73 @@ def buscar_producto(lista_local):
 
 
 def nuevo_producto(lista_local):
+    '''Agregar un nuevo producto a la lista local
+
+    Se ingresan los distintos parametros de un producto y se guarda el diccionario al
+    final de la lista.
+    Retorna la misma lista pero con el nuevo producto
+
+    @param lista_local Lista de diccionarios con los productos locales
+    '''
+    producto_nuevo = {} # Dict del nuevo producto a agregar
     print('A continuación agregue los datos necesarios del nuevo producto.\n')
-    pass
+    producto_nuevo['producto'] = input('Ingrese un numero de producto: ')
+    producto_nuevo['cod_barra'] = input('Ingrese un código de barras: ')
+    producto_nuevo['descripcion'] = input('Ingrese el nombre del producto: ')
+    producto_nuevo['precio'] = float(input('Ingrese el precio (sin IVA): '))
+    producto_nuevo['precio_iva'] = producto_nuevo['precio'] + (producto_nuevo['precio'] * iva)
+    print(f"Precio con IVA de {iva*100}%: ${producto_nuevo['precio_iva']}")
+    producto_nuevo['precio_final']  = float(input('Ingrese el precio final: $'))
+    stock = input('¿Tiene stock de este producto actualmente?\n1. Si\n2. No')
+    if stock == 1 or stock in ['si', 'Si', 'SI']: producto_nuevo['stock'] = False
+    elif stock == 2 or stock in ['no', 'No', 'NO']: producto_nuevo['stock'] = True
+    else: print('Ingreso invalido.')
+    lista_local.append(producto_nuevo)
+    print('¡Producto nuevo agregado con éxito!')
+
+    return lista_local
 
 
 def act_precios(lista_local):
-    pass
+    '''Actualizar productos de la lista local
+
+    Actualiza la lista_local leyendo un archivo nuevo del proveedor, rehusando las funciones
+    de 'cargar_proveedor()' y 'precio_final()'
+    Retorna la nueva lista local actualizada.
+
+    @param lista_local Lista de diccionarios con los productos locales
+    '''
+    print('A continuación se cargará el archivo con la lista de precios del proveedor.')
+    lista_proveedor = cargar_proveedor()
+    if lista_proveedor != False: # Si se cargó bien la lista del proveedor
+        print('A continuación se creará el archivo con la lista de precios local.')
+        lista_local = precio_final(lista_proveedor)
+        return lista_local
+    else: print('Sin archivo de proveedor no se puede continuar.\n¡Hasta Luego!')
 
 
 def controlar_stock(lista_local):
-    pass
+    '''Controlar Stock faltante
+    
+    Imprime los productos marcados como stock faltante ('stock': True) y los guarda en un archivo de texto
+    ("stock_faltante.txt").
+
+    @param lista_local Lista de diccionarios con los productos locales
+    '''
+    print('A continuación le mostraremos los productos marcados con stock faltante y se guardara en un archivo de texto ',
+    'para luego pedirle al proveedor.\nSi quiere marcar un producto debe hacerlo ingresando a "1. Buscar producto" ',
+    'desde el menú inicial.')
+    # Filtro la lista local con los productos marcados como faltantes (True)
+    prod_falta = [lista_local[i] for i in range(len(lista_local)) if lista_local[i]['stock'] == True]
+    fo = open('stock_faltante.txt', 'w')
+    print('Productos faltantes:')
+    fo.write("Productos faltantes:\n")
+    for item in prod_falta:
+        print(item)
+        fo.writelines(item.values())
+    fo.flush()
+    fo.close()
+    print('¡Archivo de stock faltante creado con éxito!')
 
 
 if __name__ == '__main__':
@@ -333,12 +392,12 @@ if __name__ == '__main__':
             buscar_producto(lista_local)
             continue
         elif menu == 2:
-            nuevo_producto(lista_local)
+            lista_local = nuevo_producto(lista_local)
             continue
         elif menu == 3:
-            pass
+            lista_local = act_precios(lista_local)
         elif menu == 4:
-            pass
+            controlar_stock(lista_local)
         elif menu == 0: 
             print('¡Gracias por usar Tu Negocio Fácil!\n¡Hasta la próxima!')
             break
