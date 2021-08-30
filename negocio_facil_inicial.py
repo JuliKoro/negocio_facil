@@ -418,5 +418,4 @@ if __name__ == '__main__':
         else:
             print('Ingrese una opción correcta, por favor.')
             continue
-
-      
+        
